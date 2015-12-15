@@ -5,35 +5,9 @@ function themeConfig($form) {
     $logoText = new Typecho_Widget_Helper_Form_Element_Text('logoText', NULL, NULL, _t('网站文字LOGO'), _t('网站文字LOGO，单个文字;为空时取网站标题第一个文字'));
     $form->addInput($logoText);
     
-    $avatarUrl= new Typecho_Widget_Helper_Form_Element_Text('avatarUrl', NULL, NULL, _t('头像'), _t('填写图片URL，留空则输出默认。图片为主题img/目录下avatar.img'));
+	$avatarUrl = new Typecho_Widget_Helper_Form_Element_Text('avatarUrl', NULL, NULL, _t('博主头像'), _t('博主头像地址，为空则不显示'));
     $form->addInput($avatarUrl);
-    
-    $gravatar = new Typecho_Widget_Helper_Form_Element_Text('gravatar', NULL, NULL, _t('文章页底部头像'), _t('填写图片URL，留空则输出默认。默认为首页头像'));
-    $form->addInput($gravatar);
-    
-    $tips = new Typecho_Widget_Helper_Form_Element_Text('tips', NULL, NULL, _t('底部头像描述'), _t('底部头像文字签名描述'));
-    $form->addInput($tips);
-
-    $css = new Typecho_Widget_Helper_Form_Element_Radio('css',
-    array(
-    'default' => _t('默认风格'),
-    'red' => _t('红色风格'),
-    'green' => _t('绿色风格'),
-    'blue' => _t('蓝色风格'),
-    'purple' => _t('紫色风格'),
-    'black' => _t('黑色风格')
-    ),
-    'default',
-    _t('配色选择'));
-     
-    $form->addInput($css);
-    
-    $alipayAccount = new Typecho_Widget_Helper_Form_Element_Text('alipayAccount', NULL, NULL, _t('打赏支付宝帐号'), _t('在这里填入支付宝帐号'));
-    $form->addInput($alipayAccount);
-    
-    $alipayAmount = new Typecho_Widget_Helper_Form_Element_Text('alipayAmount', NULL, NULL, _t('默认打赏金额'), _t('在这里填入打赏金额'));
-    $form->addInput($alipayAmount);
-
+	
     $icpNum = new Typecho_Widget_Helper_Form_Element_Text('icpNum', NULL, NULL, _t('网站备案号'), _t('在这里填入网站备案号'));
     $form->addInput($icpNum);
     
@@ -43,6 +17,14 @@ function themeConfig($form) {
     $bgPhoto = new Typecho_Widget_Helper_Form_Element_Text('bgPhoto', NULL, NULL, _t('网站背景图'), _t('在这里填入背景图网址'));
     $form->addInput($bgPhoto);
     
+	// 头像地址
+	$avatarDomain = new Typecho_Widget_Helper_Form_Element_Text('avatarDomain', NULL, 'http://cn.gravatar.com', _t('头像地址'),_t('替换Typecho使用的Gravatar头像服务器（ www.gravatar.com ）'));
+	$form->addInput($avatarDomain);
+	
+	$alipayAccount = new Typecho_Widget_Helper_Form_Element_Text('alipayAccount', NULL, NULL, _t('打赏支付宝帐号'), _t('在这里填入支付宝帐号'));
+    $form->addInput($alipayAccount);
+	$alipayAmount = new Typecho_Widget_Helper_Form_Element_Text('alipayAmount', NULL, NULL, _t('默认打赏金额'), _t('在这里填入打赏金额'));
+    $form->addInput($alipayAmount);
     //附件源地址
     $src_address = new Typecho_Widget_Helper_Form_Element_Text('src_add', NULL, NULL, _t('替换前地址'), _t('即你的附件存放地址，如http://www.yourblog.com/usr/uploads/'));
     $form->addInput($src_address);
@@ -50,6 +32,7 @@ function themeConfig($form) {
     $cdn_address = new Typecho_Widget_Helper_Form_Element_Text('cdn_add', NULL, NULL, _t('替换后'), _t('即你的七牛云存储域名，如http://yourblog.qiniudn.com/'));
     $form->addInput($cdn_address);
     
+	
     //默认缩略图
     $default = new Typecho_Widget_Helper_Form_Element_Text('default_thumb', NULL, '', _t('默认缩略图'),_t('文章没有图片时显示的默认缩略图，为空时表示不显示'));
     $form->addInput($default);
@@ -60,6 +43,9 @@ function themeConfig($form) {
     $height = new Typecho_Widget_Helper_Form_Element_Text('thumb_height', NULL, '140', _t('缩略图默认高度'));
     $form->addInput($height);
     
+	$iconCss = new Typecho_Widget_Helper_Form_Element_Textarea('iconCss', NULL, NULL, _t('图标样式'), _t('在这里填入图标样式代码'));
+    $form->addInput($iconCss);
+	
     $listStyle = new Typecho_Widget_Helper_Form_Element_Checkbox('listStyle',
         array('excerpt' => _t('显示摘要'),
             'thumb' => _t('显示缩略图')),
@@ -68,7 +54,29 @@ function themeConfig($form) {
     $form->addInput($listStyle);
     
 }
+/**
+ * 获取gravatar头像地址
+ *
+ * @param string $mail
+ * @param int $size
+ * @param string $rating
+ * @param string $default
+ * @return string
+ */
+function gravatarUrl($mail, $size=32, $rating=null, $default=null){
+	$url = Typecho_Widget::widget('Widget_Options')->avatarDomain;
+	$url .= '/avatar/';
 
+	if (!empty($mail)) {
+		$url .= md5(strtolower(trim($mail)));
+	}
+
+	$url .= '?s=' . $size;
+	$url .= '&amp;r=' . ($rating==null?Typecho_Widget::widget('Widget_Options')->commentsAvatarRating : $rating);
+	$url .= '&amp;d=' . $default;
+
+	return $url;
+}
 function showThumb($obj,$size=null,$link=false,$pattern='<div class="post-thumb"><a class="thumb" href="{permalink}" title="{title}" style="background-image:url({thumb})"></a></div>'){
 
     preg_match_all( "/<[img|IMG].*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/", $obj->content, $matches );
@@ -117,6 +125,16 @@ function parseContent($obj){
     if(!empty($options->src_add) && !empty($options->cdn_add)){
         $obj->content = str_ireplace($options->src_add,$options->cdn_add,$obj->content);
     }
+	$pattern="/<[img|IMG].*?src=[\'|\"](.*?)[\'|\"].*?alt=[\'|\"](.*?)[\'|\"].*?[\/]?>/";
+	preg_match_all($pattern,$obj->content,$match);
+	if(count($match[1])>0){
+		$div = $match[0];
+		$imgs = $match[1];
+		$alt = $match[2];
+		foreach($imgs as $k=>$v){
+			$obj->content = str_replace($div[$k],"<a href='".$v."' data-lightbox='".$v."'>".$alt[$k]."</a>",$obj->content);
+		}
+	}
     echo trim($obj->content);
 }
 /**
@@ -216,7 +234,9 @@ function threadedComments($comments, $options){
     
     <div class="comment-meta">
         <div class="comment-meta-author" itemprop="creator" itemscope itemtype="http://schema.org/Person">
-            <span itemprop="image"><?php $comments->gravatar($options->avatarSize, $options->defaultAvatar); ?></span>
+            <span itemprop="image">
+			<img class="avatar" src="<?php echo gravatarUrl($comments->mail, $options->avatarSize, null,$options->defaultAvatar);?>" width="<?php echo $options->avatarSize;?>">
+			</span>
             <cite class="fn" itemprop="name"><?php $options->beforeAuthor();
             $comments->author();
             $options->afterAuthor(); ?></cite>

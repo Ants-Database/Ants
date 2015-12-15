@@ -24,6 +24,9 @@ $header = Typecho_Plugin::factory('admin/header.php')->header($header);
         <title><?php _e('%s - %s - Powered by Typecho', $menu->title, $options->title); ?></title>
         <meta name="robots" content="noindex, nofollow">
         <?php echo $header; ?>
+        <link rel="icon" href="http://7xnuhs.com1.z0.glb.clouddn.com/ants-03.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="http://7xnuhs.com1.z0.glb.clouddn.com/ants-03.ico" type="image/x-icon" />
+
     </head>
     <body<?php if (isset($bodyClass)) {echo ' class="' . $bodyClass . '"';} ?>>
     <!--[if lt IE 9]>

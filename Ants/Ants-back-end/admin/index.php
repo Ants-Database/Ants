@@ -45,12 +45,7 @@ $stat = Typecho_Widget::widget('Widget_Stat');
                 </ul>
                 <?php $version = Typecho_Cookie::get('__typecho_check_version'); ?>
                 <?php if ($version && $version['available']): ?>
-                <div class="update-check">
-                    <p class="message notice">
-                        <?php _e('您当前使用的版本是'); ?> <?php echo $version['current']; ?> &rarr;
-                        <strong><a href="<?php echo $version['link']; ?>"><?php _e('官方最新版本是'); ?> <?php echo $version['latest']; ?></a></strong>
-                    </p>
-                </div>
+   
                 <?php endif; ?>
             </div>
 
@@ -93,16 +88,7 @@ $stat = Typecho_Widget::widget('Widget_Stat');
                 </section>
             </div>
 
-            <div class="col-mb-12 col-tb-4" role="complementary">
-                <section class="latest-link">
-                    <h3><?php _e('官方最新日志'); ?></h3>
-                    <div id="typecho-message">
-                        <ul>
-                            <li><?php _e('读取中...'); ?></li>
-                        </ul>
-                    </div>
-                </section>
-            </div>
+ 
         </div>
     </div>
 </div>

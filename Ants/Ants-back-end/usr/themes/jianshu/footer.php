@@ -12,8 +12,7 @@
         <a href="<?php $this->options->commentsFeedUrl(); ?>"><?php _e('评论 RSS'); ?></a>
 	</p> 
     <p> &copy; <?php echo date('Y');?> <a href="<?php $this->options->siteUrl(); ?>" target="_blank"> <?php $this->options->title() ?> </a>
-        <?php _e(' / Powered by <a href="http://www.typecho.org" target="_blank">Typecho</a>'); ?>
-        <?php _e(' / Theme(变异版) by <a href="http://lixianhua.com" target="_blank">绛木子</a>'); ?>
+
         <?php if ($this->options->icpNum): ?>
            / <a href="http://www.miitbeian.gov.cn/" target="blank"><?php $this->options->icpNum(); ?></a>
         <?php endif; ?>
@@ -29,13 +28,15 @@
 <?php $this->footer(); ?>
 <script src="<?php $this->options->themeUrl('js/common.js'); ?>"></script>
 <?php if ($this->is('post')) :?>
-<script src="http://apps.bdimg.com/libs/prettify/r298/prettify.min.js"></script>
+<script src="<?php $this->options->themeUrl('js/highlight.min.js'); ?>"></script>
 <script src="<?php $this->options->themeUrl('js/qrcode.js'); ?>"></script>
+<script src="<?php $this->options->themeUrl('js/lightbox.min.js'); ?>"></script>
 <script>
 $(function(){
 	$(window).load(function(){
-	     $("pre code").addClass("prettyprint");
-	     prettyPrint();
+	     $('pre code').each(function(i, block) {
+			hljs.highlightBlock(block);
+		  });
 	});
 	var qrcode = new QRCode(document.getElementById("qrcode-img"), {
         width : 96,//设置宽高
